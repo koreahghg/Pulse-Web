@@ -135,9 +135,15 @@ type AuditState =
   | { status: 'error'; message: string };
 
 // /history 페이지는 localStorage에서 파생
-const history: LighthouseReport[] = JSON.parse(
-  localStorage.getItem('pulse_history') ?? '[]'
-);
+// JSON.parse는 데이터 오염 시 throw하므로 반드시 try-catch로 감싼다
+function getHistory(): LighthouseReport[] {
+  try {
+    return JSON.parse(localStorage.getItem('pulse_history') ?? '[]');
+  } catch {
+    localStorage.removeItem('pulse_history'); // 오염된 데이터 제거
+    return [];
+  }
+}
 ```
 
 판별 유니온(discriminated union)으로 UI 상태를 명시적으로 표현해 `loading && !error` 같은 복합 조건문을 없앤다.
@@ -187,14 +193,19 @@ export function getCachedReport(
   const raw = localStorage.getItem(key);
   if (!raw) return null;
 
-  const { data, timestamp }: { data: LighthouseReport; timestamp: number } =
-    JSON.parse(raw);
+  try {
+    const { data, timestamp }: { data: LighthouseReport; timestamp: number } =
+      JSON.parse(raw);
 
-  if (Date.now() - timestamp > CACHE_TTL) {
-    localStorage.removeItem(key);
+    if (Date.now() - timestamp > CACHE_TTL) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data;
+  } catch {
+    localStorage.removeItem(key); // 오염된 캐시 제거
     return null;
   }
-  return data;
 }
 
 export function setCachedReport(
