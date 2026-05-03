@@ -214,7 +214,41 @@ export function setCachedReport(
   data: LighthouseReport
 ): void {
   const key = "pulse_cache_" + encodeURIComponent(url) + "_" + strategy;
-  localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+  const value = JSON.stringify({ data, timestamp: Date.now() });
+
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+      evictOldestCacheEntries();
+      try {
+        localStorage.setItem(key, value); // 제거 후 1회 재시도
+      } catch {
+        // 재시도도 실패하면 캐시 없이 진행 (기능은 유지됨)
+      }
+    }
+  }
+}
+
+// pulse_ 접두사를 가진 캐시 항목 중 가장 오래된 절반을 제거
+function evictOldestCacheEntries(): void {
+  const entries: { key: string; timestamp: number }[] = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k?.startsWith("pulse_cache_")) continue;
+    try {
+      const { timestamp } = JSON.parse(localStorage.getItem(k) ?? "{}");
+      entries.push({ key: k, timestamp: timestamp ?? 0 });
+    } catch {
+      localStorage.removeItem(k); // 파싱 불가 항목은 즉시 제거
+    }
+  }
+
+  entries
+    .sort((a, b) => a.timestamp - b.timestamp)
+    .slice(0, Math.ceil(entries.length / 2))
+    .forEach(({ key }) => localStorage.removeItem(key));
 }
 ```
 
