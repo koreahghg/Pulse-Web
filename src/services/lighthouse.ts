@@ -43,7 +43,7 @@ export async function runLighthouseAudit(
   url: string,
   strategy: AuditStrategy = 'mobile'
 ): Promise<LighthouseReport> {
-  const apiKey = process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY;
+  const apiKey = process.env.LIGHTHOUSE_API_KEY;
 
   const params = new URLSearchParams({ url, strategy });
   if (apiKey) params.set('key', apiKey);
