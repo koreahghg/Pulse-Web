@@ -44,17 +44,27 @@ export async function runLighthouseAudit(
   strategy: AuditStrategy = 'mobile'
 ): Promise<LighthouseReport> {
   const apiKey = process.env.LIGHTHOUSE_API_KEY;
+  const timeout = Number(process.env.AUDIT_TIMEOUT) || 30000;
 
   const params = new URLSearchParams({ url, strategy });
   if (apiKey) params.set('key', apiKey);
 
-  const response = await fetch(`${PSI_API_URL}?${params}`);
-  if (!response.ok) {
-    throw new Error(`PageSpeed API 오류: ${response.status} ${response.statusText}`);
-  }
+  const controller = new AbortController();
+  const timerId = setTimeout(() => controller.abort(), timeout);
 
-  const data: PSIResponse = await response.json();
-  return transformResponse(data, strategy);
+  try {
+    const response = await fetch(`${PSI_API_URL}?${params}`, {
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`PageSpeed API 오류: ${response.status} ${response.statusText}`);
+    }
+
+    const data: PSIResponse = await response.json();
+    return transformResponse(data, strategy);
+  } finally {
+    clearTimeout(timerId);
+  }
 }
 
 function transformResponse(data: PSIResponse, strategy: AuditStrategy): LighthouseReport {
