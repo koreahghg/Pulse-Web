@@ -189,7 +189,7 @@ export function getCachedReport(
   url: string,
   strategy: AuditStrategy
 ): LighthouseReport | null {
-  const key = `pulse_cache_${btoa(url)}_${strategy}`;
+  const key = "pulse_cache_" + encodeURIComponent(url) + "_" + strategy;
   const raw = localStorage.getItem(key);
   if (!raw) return null;
 
@@ -213,7 +213,7 @@ export function setCachedReport(
   strategy: AuditStrategy,
   data: LighthouseReport
 ): void {
-  const key = `pulse_cache_${btoa(url)}_${strategy}`;
+  const key = "pulse_cache_" + encodeURIComponent(url) + "_" + strategy;
   localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
 }
 ```
