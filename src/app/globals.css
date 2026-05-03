@@ -1,0 +1,23 @@
+@import 'tailwindcss';
+
+:root {
+  --color-bg-primary: #f9fafb;
+  --color-bg-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-text-primary: #111827;
+  --color-text-muted: #6b7280;
+
+  /* Lighthouse 점수 색상 */
+  --color-score-good: #0cce6b;
+  --color-score-average: #ffa400;
+  --color-score-poor: #ff4e42;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
