@@ -1,14 +1,29 @@
 import type { AnalysisRequest, AnalysisError } from './analysis';
 import type { LighthouseReport } from './lighthouse';
 
-export interface AnalysisRecord {
-  request: AnalysisRequest;
-  result: LighthouseReport | null;
-  error: AnalysisError | null;
-  completedAt: string | null;
-  /** 요청 시작부터 완료까지 소요 시간 (ms) */
-  durationMs: number | null;
-}
+export type AnalysisRecord =
+  | {
+      request: AnalysisRequest & { status: 'completed' };
+      result: LighthouseReport;
+      error: null;
+      completedAt: string;
+      /** 요청 시작부터 완료까지 소요 시간 (ms) */
+      durationMs: number;
+    }
+  | {
+      request: AnalysisRequest & { status: 'failed' };
+      result: null;
+      error: AnalysisError;
+      completedAt: string;
+      durationMs: number;
+    }
+  | {
+      request: AnalysisRequest & { status: 'pending' | 'running' };
+      result: null;
+      error: null;
+      completedAt: null;
+      durationMs: null;
+    };
 
 export interface AnalysisHistory {
   targetId: string;
