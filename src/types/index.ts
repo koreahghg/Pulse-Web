@@ -14,6 +14,7 @@ export type {
   CategoryScore,
   LighthouseCategories,
   PerformanceMetric,
+  KeyMetrics,
   LighthouseReport,
 } from './lighthouse';
 
