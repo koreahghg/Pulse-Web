@@ -125,7 +125,16 @@ export async function runLighthouseAudit(
       throw new LighthouseServiceError(errorMessage, 502, 'LIGHTHOUSE_UPSTREAM_ERROR');
     }
 
-    const data: PSIResponse = await response.json();
+    const data = await safeParseJson(response);
+
+    if (!isPSIResponse(data)) {
+      throw new LighthouseServiceError(
+        '유효하지 않은 응답 데이터입니다.',
+        502,
+        'LIGHTHOUSE_INVALID_RESPONSE'
+      );
+    }
+
     return transformResponse(data, url, strategy);
   } catch (error) {
     if (error instanceof LighthouseServiceError) {
@@ -156,6 +165,10 @@ async function safeParseJson(response: Response): Promise<unknown> {
   } catch {
     return null;
   }
+}
+
+function isPSIResponse(data: unknown): data is PSIResponse {
+  return typeof data === 'object' && data !== null;
 }
 
 function transformResponse(
