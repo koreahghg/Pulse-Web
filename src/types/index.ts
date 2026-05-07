@@ -1,38 +1,22 @@
-export type MetricScore = 'good' | 'needs-improvement' | 'poor';
+export type { MetricScore, AuditStrategy } from './common';
 
-export type AuditStrategy = 'mobile' | 'desktop';
+export type { AnalysisStatus, AnalysisRequest, AnalysisError, AuditTarget } from './analysis';
 
-export interface CategoryScore {
-  id: string;
-  title: string;
-  score: number; // 0~1 범위
-}
+export type {
+  WebVitalMetric,
+  WebVitals,
+  WebVitalKey,
+  WebVitalThresholds,
+} from './webVitals';
+export { WEB_VITAL_THRESHOLDS } from './webVitals';
 
-export interface PerformanceMetric {
-  id: string;
-  title: string;
-  value: number;
-  score: number; // 0~1 범위
-  displayValue: string;
-}
+export type {
+  CategoryScore,
+  LighthouseCategories,
+  PerformanceMetric,
+  LighthouseReport,
+} from './lighthouse';
 
-export interface LighthouseReport {
-  id: string;
-  url: string;
-  fetchTime: string;
-  strategy: AuditStrategy;
-  categories: {
-    performance: CategoryScore;
-    accessibility: CategoryScore;
-    bestPractices: CategoryScore;
-    seo: CategoryScore;
-  };
-  metrics: PerformanceMetric[];
-}
+export type { AnalysisRecord, AnalysisHistory, StoredHistory } from './history';
 
-export interface AuditTarget {
-  id: string;
-  url: string;
-  label: string;
-  createdAt: string;
-}
+export type { MetricDelta, CategoryDelta, WebVitalDeltaMap, ComparisonResult } from './comparison';
