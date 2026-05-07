@@ -9,7 +9,8 @@ export interface MetricDelta {
   after: number;
   /** after - before (음수 = 대부분 지표에서 개선) */
   delta: number;
-  deltaPercent: number;
+  /** before가 0이면 계산 불가 → null */
+  deltaPercent: number | null;
   improved: boolean;
 }
 
