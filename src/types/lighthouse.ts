@@ -29,6 +29,15 @@ export interface PerformanceMetric {
   description?: string;
 }
 
+export interface KeyMetrics {
+  fcp: PerformanceMetric | null;
+  lcp: PerformanceMetric | null;
+  cls: PerformanceMetric | null;
+  tti: PerformanceMetric | null;
+  tbt: PerformanceMetric | null;
+  speedIndex: PerformanceMetric | null;
+}
+
 export interface LighthouseReport {
   id: string;
   url: string;
@@ -36,6 +45,7 @@ export interface LighthouseReport {
   strategy: AuditStrategy;
   categories: LighthouseCategories;
   metrics: PerformanceMetric[];
+  keyMetrics: KeyMetrics;
   /** Web Vitals 파생 데이터 — 서비스 변환 시 선택적으로 채움 */
   webVitals?: WebVitals;
 }
