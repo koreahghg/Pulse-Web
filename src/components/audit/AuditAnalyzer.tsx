@@ -113,23 +113,13 @@ export function AuditAnalyzer() {
       {report ? (
         <>
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-6 shadow-sm">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-[var(--color-text-muted)]">분석 대상</p>
-                <p className="break-all text-lg font-semibold text-[var(--color-text-primary)]">
-                  {report.url}
-                </p>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  분석 시각 {formatDate(report.fetchTime)}
-                </p>
-              </div>
-              <div className="rounded-2xl bg-slate-900 px-5 py-4 text-white">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Performance</p>
-                <p className="mt-2 text-4xl font-bold">
-                  {formatScore(report.categories.performance.score)}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm font-medium text-[var(--color-text-muted)]">분석 대상</p>
+            <p className="mt-1 break-all text-lg font-semibold text-[var(--color-text-primary)]">
+              {report.url}
+            </p>
+            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+              분석 시각 {formatDate(report.fetchTime)}
+            </p>
           </section>
 
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
