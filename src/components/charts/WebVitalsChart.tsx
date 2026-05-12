@@ -24,55 +24,20 @@ const SCORE_LABELS: Record<MetricScore, string> = {
   poor: '나쁨',
 };
 
-const METRIC_DESCRIPTIONS: Partial<Record<WebVitalKey, {
-  full: string;
-  desc: string;
-  goodLabel: string;
-  poorLabel: string;
-}>> = {
-  lcp: {
-    full: 'Largest Contentful Paint',
-    desc: '페이지 내 가장 큰 콘텐츠가 렌더링되는 시간. 로딩 성능을 측정합니다.',
-    goodLabel: '< 2.5 s',
-    poorLabel: '> 4.0 s',
-  },
-  cls: {
-    full: 'Cumulative Layout Shift',
-    desc: '예상치 못한 레이아웃 이동 정도. 시각적 안정성을 측정합니다.',
-    goodLabel: '< 0.1',
-    poorLabel: '> 0.25',
-  },
-  fcp: {
-    full: 'First Contentful Paint',
-    desc: '첫 번째 콘텐츠가 화면에 표시되는 시간입니다.',
-    goodLabel: '< 1.8 s',
-    poorLabel: '> 3.0 s',
-  },
-  tbt: {
-    full: 'Total Blocking Time',
-    desc: '메인 스레드가 사용자 입력을 차단한 총 시간입니다.',
-    goodLabel: '< 200 ms',
-    poorLabel: '> 600 ms',
-  },
-  si: {
-    full: 'Speed Index',
-    desc: '페이지 콘텐츠가 시각적으로 채워지는 속도입니다.',
-    goodLabel: '< 3.4 s',
-    poorLabel: '> 5.8 s',
-  },
-  inp: {
-    full: 'Interaction to Next Paint',
-    desc: '사용자 상호작용 후 다음 화면이 그려지는 응답 시간입니다.',
-    goodLabel: '< 200 ms',
-    poorLabel: '> 500 ms',
-  },
-  ttfb: {
-    full: 'Time to First Byte',
-    desc: '브라우저가 서버로부터 첫 번째 바이트를 받는 시간입니다.',
-    goodLabel: '< 800 ms',
-    poorLabel: '> 1.8 s',
-  },
+const METRIC_DESCRIPTIONS: Partial<Record<WebVitalKey, { full: string; desc: string }>> = {
+  lcp:  { full: 'Largest Contentful Paint',    desc: '페이지 내 가장 큰 콘텐츠가 렌더링되는 시간. 로딩 성능을 측정합니다.' },
+  cls:  { full: 'Cumulative Layout Shift',      desc: '예상치 못한 레이아웃 이동 정도. 시각적 안정성을 측정합니다.' },
+  fcp:  { full: 'First Contentful Paint',       desc: '첫 번째 콘텐츠가 화면에 표시되는 시간입니다.' },
+  tbt:  { full: 'Total Blocking Time',          desc: '메인 스레드가 사용자 입력을 차단한 총 시간입니다.' },
+  si:   { full: 'Speed Index',                  desc: '페이지 콘텐츠가 시각적으로 채워지는 속도입니다.' },
+  inp:  { full: 'Interaction to Next Paint',    desc: '사용자 상호작용 후 다음 화면이 그려지는 응답 시간입니다.' },
+  ttfb: { full: 'Time to First Byte',           desc: '브라우저가 서버로부터 첫 번째 바이트를 받는 시간입니다.' },
 };
+
+function formatThreshold(key: WebVitalKey, value: number): string {
+  if (key === 'cls') return String(value);
+  return value >= 1000 ? `${(value / 1000).toFixed(1)} s` : `${value} ms`;
+}
 
 export function WebVitalsChart({ report }: Props) {
   const performanceScore = Math.round((report.categories.performance.score ?? 0) * 100);
@@ -170,10 +135,14 @@ export function WebVitalsChart({ report }: Props) {
                     <p className="text-2xl font-bold text-[var(--color-text-primary)]">
                       {metric.displayValue}
                     </p>
-                    {info && (
+                    {WEB_VITAL_THRESHOLDS[key] && (
                       <div className="text-right">
-                        <p className={`text-xs font-medium ${THRESHOLD_LABEL_STYLES.good}`}>좋음 {info.goodLabel}</p>
-                        <p className={`text-xs font-medium ${THRESHOLD_LABEL_STYLES.poor}`}>나쁨 {info.poorLabel}</p>
+                        <p className={`text-xs font-medium ${THRESHOLD_LABEL_STYLES.good}`}>
+                          좋음 {'< ' + formatThreshold(key, WEB_VITAL_THRESHOLDS[key].good)}
+                        </p>
+                        <p className={`text-xs font-medium ${THRESHOLD_LABEL_STYLES.poor}`}>
+                          나쁨 {'> ' + formatThreshold(key, WEB_VITAL_THRESHOLDS[key].poor)}
+                        </p>
                       </div>
                     )}
                   </div>
