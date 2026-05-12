@@ -1,36 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { formatDate, formatScore, isValidUrl } from '@/lib/utils';
 import { requestLighthouseAudit } from '@/services/audit';
-import type { LighthouseReport, MetricScore, PerformanceMetric } from '@/types';
+import { WebVitalsChart } from '@/components/charts/WebVitalsChart';
+import type { LighthouseReport } from '@/types';
 
 type AuditState =
   | { status: 'idle'; report: null; message: null }
   | { status: 'loading'; report: null; message: null }
   | { status: 'success'; report: LighthouseReport; message: null }
   | { status: 'error'; report: null; message: string };
-
-const METRIC_ORDER = [
-  'lcp',
-  'cls',
-  'fcp',
-  'tti',
-  'tbt',
-  'speedIndex',
-] as const satisfies ReadonlyArray<keyof LighthouseReport['keyMetrics']>;
-
-const SCORE_STYLES: Record<MetricScore, string> = {
-  good: 'bg-emerald-50 text-emerald-700',
-  'needs-improvement': 'bg-amber-50 text-amber-700',
-  poor: 'bg-rose-50 text-rose-700',
-};
-
-const SCORE_LABELS: Record<MetricScore, string> = {
-  good: '좋음',
-  'needs-improvement': '개선 필요',
-  poor: '나쁨',
-};
 
 export function AuditAnalyzer() {
   const [url, setUrl] = useState('');
@@ -42,17 +23,13 @@ export function AuditAnalyzer() {
 
   const isLoading = state.status === 'loading';
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedUrl = url.trim();
 
     if (!trimmedUrl) {
-      setState({
-        status: 'error',
-        report: null,
-        message: '분석할 URL을 입력해주세요.',
-      });
+      setState({ status: 'error', report: null, message: '분석할 URL을 입력해주세요.' });
       return;
     }
 
@@ -65,20 +42,11 @@ export function AuditAnalyzer() {
       return;
     }
 
-    setState({
-      status: 'loading',
-      report: null,
-      message: null,
-    });
+    setState({ status: 'loading', report: null, message: null });
 
     try {
       const report = await requestLighthouseAudit(trimmedUrl);
-
-      setState({
-        status: 'success',
-        report,
-        message: null,
-      });
+      setState({ status: 'success', report, message: null });
     } catch (error) {
       setState({
         status: 'error',
@@ -93,11 +61,6 @@ export function AuditAnalyzer() {
 
   const report = state.status === 'success' ? state.report : null;
   const categories = report ? Object.values(report.categories) : [];
-  const metrics = report
-    ? METRIC_ORDER.map((metricKey) => report.keyMetrics[metricKey]).filter(
-        (metric): metric is PerformanceMetric => metric !== null
-      )
-    : [];
 
   return (
     <div className="space-y-6">
@@ -105,8 +68,7 @@ export function AuditAnalyzer() {
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">성능 감사</h2>
           <p className="text-sm text-[var(--color-text-muted)]">
-            분석할 웹사이트 URL을 입력하면 Lighthouse API를 호출해 주요 성능 지표를
-            보여줍니다.
+            분석할 웹사이트 URL을 입력하면 Lighthouse API를 호출해 주요 성능 지표를 보여줍니다.
           </p>
         </div>
 
@@ -122,7 +84,6 @@ export function AuditAnalyzer() {
               disabled={isLoading}
             />
           </label>
-
           <button
             type="submit"
             className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
@@ -139,8 +100,7 @@ export function AuditAnalyzer() {
 
       {state.status === 'loading' && (
         <section className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 text-sm text-blue-700">
-          Lighthouse 분석을 진행 중입니다. 응답까지 수 초에서 수십 초 정도 걸릴 수
-          있습니다.
+          Lighthouse 분석을 진행 중입니다. 응답까지 수 초에서 수십 초 정도 걸릴 수 있습니다.
         </section>
       )}
 
@@ -153,24 +113,13 @@ export function AuditAnalyzer() {
       {report ? (
         <>
           <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-6 shadow-sm">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-[var(--color-text-muted)]">분석 대상</p>
-                <p className="break-all text-lg font-semibold text-[var(--color-text-primary)]">
-                  {report.url}
-                </p>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  분석 시각 {formatDate(report.fetchTime)}
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-slate-900 px-5 py-4 text-white">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Performance</p>
-                <p className="mt-2 text-4xl font-bold">
-                  {formatScore(report.categories.performance.score)}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm font-medium text-[var(--color-text-muted)]">분석 대상</p>
+            <p className="mt-1 break-all text-lg font-semibold text-[var(--color-text-primary)]">
+              {report.url}
+            </p>
+            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+              분석 시각 {formatDate(report.fetchTime)}
+            </p>
           </section>
 
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -189,52 +138,7 @@ export function AuditAnalyzer() {
             ))}
           </section>
 
-          <section className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
-                  주요 성능 지표
-                </h3>
-                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                  LCP, CLS, FCP, TTI를 포함한 핵심 메트릭을 확인할 수 있습니다.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {metrics.map((metric) => (
-                <article
-                  key={metric.id}
-                  className="rounded-2xl border border-[var(--color-border)] bg-slate-50 p-5"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">
-                        {metric.title}
-                      </h4>
-                      {metric.description && (
-                        <p className="mt-2 text-xs leading-5 text-[var(--color-text-muted)]">
-                          {metric.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {metric.scoreLabel && (
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${SCORE_STYLES[metric.scoreLabel]}`}
-                      >
-                        {SCORE_LABELS[metric.scoreLabel]}
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="mt-5 text-3xl font-bold text-[var(--color-text-primary)]">
-                    {metric.displayValue || '-'}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </section>
+          <WebVitalsChart report={report} />
         </>
       ) : (
         state.status === 'idle' && (
