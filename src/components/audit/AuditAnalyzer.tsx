@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { formatDate, formatScore, isValidUrl } from '@/lib/utils';
 import { requestLighthouseAudit } from '@/services/audit';
 import { WebVitalsChart } from '@/components/charts/WebVitalsChart';
@@ -22,7 +23,7 @@ export function AuditAnalyzer() {
 
   const isLoading = state.status === 'loading';
 
-  async function handleSubmit(event: { preventDefault(): void }) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const trimmedUrl = url.trim();
