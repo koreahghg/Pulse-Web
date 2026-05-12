@@ -10,10 +10,12 @@ interface Props {
   report: LighthouseReport;
 }
 
-const SCORE_STYLES: Record<MetricScore, { badge: string; good: string; poor: string }> = {
-  good: { badge: 'bg-emerald-50 text-emerald-700', good: 'text-emerald-600', poor: 'text-rose-500' },
-  'needs-improvement': { badge: 'bg-amber-50 text-amber-700', good: 'text-emerald-600', poor: 'text-rose-500' },
-  poor: { badge: 'bg-rose-50 text-rose-700', good: 'text-emerald-600', poor: 'text-rose-500' },
+const THRESHOLD_LABEL_STYLES = { good: 'text-emerald-600', poor: 'text-rose-500' } as const;
+
+const SCORE_BADGE: Record<MetricScore, string> = {
+  good: 'bg-emerald-50 text-emerald-700',
+  'needs-improvement': 'bg-amber-50 text-amber-700',
+  poor: 'bg-rose-50 text-rose-700',
 };
 
 const SCORE_LABELS: Record<MetricScore, string> = {
@@ -137,9 +139,7 @@ export function WebVitalsChart({ report }: Props) {
             지표 상세
           </h3>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {metricEntries.map(({ key, metric, info }) => {
-              const style = SCORE_STYLES[metric.score];
-              return (
+            {metricEntries.map(({ key, metric, info }) => (
                 <article
                   key={key}
                   className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-5 shadow-sm"
@@ -155,7 +155,7 @@ export function WebVitalsChart({ report }: Props) {
                         </p>
                       )}
                     </div>
-                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${style.badge}`}>
+                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${SCORE_BADGE[metric.score]}`}>
                       {SCORE_LABELS[metric.score]}
                     </span>
                   </div>
@@ -172,14 +172,13 @@ export function WebVitalsChart({ report }: Props) {
                     </p>
                     {info && (
                       <div className="text-right">
-                        <p className={`text-xs font-medium ${style.good}`}>좋음 {info.goodLabel}</p>
-                        <p className={`text-xs font-medium ${style.poor}`}>나쁨 {info.poorLabel}</p>
+                        <p className={`text-xs font-medium ${THRESHOLD_LABEL_STYLES.good}`}>좋음 {info.goodLabel}</p>
+                        <p className={`text-xs font-medium ${THRESHOLD_LABEL_STYLES.poor}`}>나쁨 {info.poorLabel}</p>
                       </div>
                     )}
                   </div>
                 </article>
-              );
-            })}
+            ))}
           </div>
         </section>
       )}
