@@ -8,6 +8,8 @@ import { WebVitalsChart } from '@/components/charts/WebVitalsChart';
 import { ComparisonTable } from '@/components/comparison/ComparisonTable';
 import { getStoredReport, saveReport } from '@/lib/storage';
 import { useComparison } from '@/hooks/useComparison';
+import { useRecommendations } from '@/hooks/useRecommendations';
+import { RecommendationPanel } from '@/components/recommendations/RecommendationPanel';
 import type { LighthouseReport } from '@/types';
 
 type AuditState =
@@ -28,6 +30,7 @@ export function AuditAnalyzer() {
   const isLoading = state.status === 'loading';
   const report = state.status === 'success' ? state.report : null;
   const comparison = useComparison(previousReport, report);
+  const recommendations = useRecommendations(report);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -146,6 +149,8 @@ export function AuditAnalyzer() {
           </section>
 
           <WebVitalsChart report={report} />
+
+          <RecommendationPanel recommendations={recommendations} />
 
           {comparison && <ComparisonTable comparison={comparison} />}
         </>

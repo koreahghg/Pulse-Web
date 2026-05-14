@@ -21,3 +21,11 @@ export type {
 export type { AnalysisRecord, AnalysisHistory, StoredHistory } from './history';
 
 export type { MetricDelta, CategoryDelta, WebVitalDeltaMap, ComparisonResult } from './comparison';
+
+export type {
+  RecommendationPriority,
+  RecommendationImpact,
+  RecommendationCategory,
+  RecommendationAction,
+  Recommendation,
+} from './recommendation';
