@@ -5,6 +5,9 @@ import type { FormEvent } from 'react';
 import { formatDate, formatScore, isValidUrl } from '@/lib/utils';
 import { requestLighthouseAudit } from '@/services/audit';
 import { WebVitalsChart } from '@/components/charts/WebVitalsChart';
+import { ComparisonTable } from '@/components/comparison/ComparisonTable';
+import { getStoredReport, saveReport } from '@/lib/storage';
+import { useComparison } from '@/hooks/useComparison';
 import type { LighthouseReport } from '@/types';
 
 type AuditState =
@@ -20,8 +23,11 @@ export function AuditAnalyzer() {
     report: null,
     message: null,
   });
+  const [previousReport, setPreviousReport] = useState<LighthouseReport | null>(null);
 
   const isLoading = state.status === 'loading';
+  const report = state.status === 'success' ? state.report : null;
+  const comparison = useComparison(previousReport, report);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,11 +48,13 @@ export function AuditAnalyzer() {
       return;
     }
 
+    setPreviousReport(getStoredReport(trimmedUrl));
     setState({ status: 'loading', report: null, message: null });
 
     try {
-      const report = await requestLighthouseAudit(trimmedUrl);
-      setState({ status: 'success', report, message: null });
+      const newReport = await requestLighthouseAudit(trimmedUrl);
+      saveReport(trimmedUrl, newReport);
+      setState({ status: 'success', report: newReport, message: null });
     } catch (error) {
       setState({
         status: 'error',
@@ -59,7 +67,6 @@ export function AuditAnalyzer() {
     }
   }
 
-  const report = state.status === 'success' ? state.report : null;
   const categories = report ? Object.values(report.categories) : [];
 
   return (
@@ -139,6 +146,8 @@ export function AuditAnalyzer() {
           </section>
 
           <WebVitalsChart report={report} />
+
+          {comparison && <ComparisonTable comparison={comparison} />}
         </>
       ) : (
         state.status === 'idle' && (
