@@ -37,9 +37,7 @@ export function saveReport(url: string, report: LighthouseReport): void {
   const map = readMap();
   const keys = Object.keys(map);
   if (keys.length >= MAX_ENTRIES && !(url in map)) {
-    const oldest = keys.reduce((a, b) =>
-      new Date(map[a].savedAt) <= new Date(map[b].savedAt) ? a : b
-    );
+    const oldest = keys.reduce((a, b) => (map[a].savedAt <= map[b].savedAt ? a : b));
     delete map[oldest];
   }
   map[url] = { report, savedAt: new Date().toISOString() };
