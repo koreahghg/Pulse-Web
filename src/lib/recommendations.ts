@@ -1,5 +1,7 @@
 import type { LighthouseReport } from '@/types';
 import type { MetricScore } from '@/types/common';
+import type { WebVitalMetric } from '@/types/webVitals';
+import type { PerformanceMetric } from '@/types/lighthouse';
 import type {
   Recommendation,
   RecommendationPriority,
@@ -23,12 +25,21 @@ function impactFromPriority(priority: RecommendationPriority): RecommendationImp
   return priority === 'low' ? 'low' : priority === 'medium' ? 'medium' : 'high';
 }
 
+// 지표 계산 시 분모가 0인 경우를 고려하여 nullable 타입을 반환합니다.
+function getMetricScore(m: WebVitalMetric | PerformanceMetric | null | undefined): MetricScore | null {
+  if (!m) return null;
+  if ('scoreLabel' in m && m.scoreLabel) return m.scoreLabel;
+  if (typeof m.score === 'string') return m.score as MetricScore;
+  if (typeof m.score === 'number') return scoreToMetricScore(m.score);
+  return null;
+}
+
 export function generateRecommendations(report: LighthouseReport): Recommendation[] {
   const recs: Recommendation[] = [];
   const { categories, webVitals, keyMetrics } = report;
 
   // ── Performance: LCP ────────────────────────────────────────────────────────
-  const lcpScore = webVitals?.lcp?.score ?? keyMetrics.lcp?.scoreLabel ?? (keyMetrics.lcp ? scoreToMetricScore(keyMetrics.lcp.score) : undefined);
+  const lcpScore = getMetricScore(webVitals?.lcp) ?? getMetricScore(keyMetrics.lcp);
   const lcpDisplay = webVitals?.lcp?.displayValue ?? keyMetrics.lcp?.displayValue;
 
   if (lcpScore && lcpScore !== 'good' && lcpDisplay) {
@@ -76,7 +87,7 @@ export function generateRecommendations(report: LighthouseReport): Recommendatio
   }
 
   // ── Performance: CLS ────────────────────────────────────────────────────────
-  const clsScore = webVitals?.cls?.score ?? keyMetrics.cls?.scoreLabel ?? (keyMetrics.cls ? scoreToMetricScore(keyMetrics.cls.score) : undefined);
+  const clsScore = getMetricScore(webVitals?.cls) ?? getMetricScore(keyMetrics.cls);
   const clsDisplay = webVitals?.cls?.displayValue ?? keyMetrics.cls?.displayValue;
 
   if (clsScore && clsScore !== 'good' && clsDisplay) {
@@ -113,7 +124,7 @@ export function generateRecommendations(report: LighthouseReport): Recommendatio
   }
 
   // ── Performance: TBT ────────────────────────────────────────────────────────
-  const tbtScore = webVitals?.tbt?.score ?? keyMetrics.tbt?.scoreLabel ?? (keyMetrics.tbt ? scoreToMetricScore(keyMetrics.tbt.score) : undefined);
+  const tbtScore = getMetricScore(webVitals?.tbt) ?? getMetricScore(keyMetrics.tbt);
   const tbtDisplay = webVitals?.tbt?.displayValue ?? keyMetrics.tbt?.displayValue;
 
   if (tbtScore && tbtScore !== 'good' && tbtDisplay) {
@@ -150,7 +161,7 @@ export function generateRecommendations(report: LighthouseReport): Recommendatio
   }
 
   // ── Performance: FCP ────────────────────────────────────────────────────────
-  const fcpScore = webVitals?.fcp?.score ?? keyMetrics.fcp?.scoreLabel ?? (keyMetrics.fcp ? scoreToMetricScore(keyMetrics.fcp.score) : undefined);
+  const fcpScore = getMetricScore(webVitals?.fcp) ?? getMetricScore(keyMetrics.fcp);
   const fcpDisplay = webVitals?.fcp?.displayValue ?? keyMetrics.fcp?.displayValue;
 
   if (fcpScore && fcpScore !== 'good' && fcpDisplay) {
@@ -184,8 +195,9 @@ export function generateRecommendations(report: LighthouseReport): Recommendatio
 
   // ── Performance: TTFB ───────────────────────────────────────────────────────
   const ttfb = webVitals?.ttfb;
-  if (ttfb && ttfb.score !== 'good') {
-    const priority: RecommendationPriority = ttfb.score === 'poor' ? 'high' : 'medium';
+  const ttfbScore = getMetricScore(ttfb);
+  if (ttfb && ttfbScore && ttfbScore !== 'good') {
+    const priority: RecommendationPriority = ttfbScore === 'poor' ? 'high' : 'medium';
     recs.push({
       id: 'ttfb',
       title: '서버 첫 응답 시간(TTFB) 단축',

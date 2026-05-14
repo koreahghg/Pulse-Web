@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Recommendation, RecommendationPriority, RecommendationCategory } from '@/types/recommendation';
 
 interface Props {
@@ -64,13 +64,25 @@ export function RecommendationPanel({ recommendations }: Props) {
     );
   }
 
-  const criticalCount = recommendations.filter((r) => r.priority === 'critical').length;
-  const highCount = recommendations.filter((r) => r.priority === 'high').length;
+  const countByPriority = useMemo(
+    () =>
+      recommendations.reduce<Record<string, number>>(
+        (acc, r) => ({ ...acc, [r.priority]: (acc[r.priority] ?? 0) + 1 }),
+        {},
+      ),
+    [recommendations],
+  );
 
-  const filtered =
-    activeFilter === 'all'
-      ? recommendations
-      : recommendations.filter((r) => r.priority === activeFilter);
+  const filtered = useMemo(
+    () =>
+      activeFilter === 'all'
+        ? recommendations
+        : recommendations.filter((r) => r.priority === activeFilter),
+    [recommendations, activeFilter],
+  );
+
+  const criticalCount = countByPriority['critical'] ?? 0;
+  const highCount = countByPriority['high'] ?? 0;
 
   return (
     <section className="space-y-4">
@@ -92,10 +104,7 @@ export function RecommendationPanel({ recommendations }: Props) {
         {/* Priority Filter */}
         <div className="flex flex-wrap gap-1.5">
           {PRIORITY_FILTERS.map(({ key, label }) => {
-            const count =
-              key === 'all'
-                ? recommendations.length
-                : recommendations.filter((r) => r.priority === key).length;
+            const count = key === 'all' ? recommendations.length : (countByPriority[key] ?? 0);
             if (key !== 'all' && count === 0) return null;
             return (
               <button
@@ -152,6 +161,7 @@ function RecommendationCard({ rec, config }: CardProps) {
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
         className="flex w-full items-start gap-3 p-5 text-left"
       >
         <span
