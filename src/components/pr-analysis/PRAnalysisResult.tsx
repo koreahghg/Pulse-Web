@@ -12,7 +12,6 @@ import { useRecommendations } from '@/hooks/useRecommendations';
 interface PRAnalysisResultProps {
   pr: GitHubPR;
   previewReport: LighthouseReport;
-  baselineReport: LighthouseReport;
   comparison: ComparisonResult;
   onReset: () => void;
 }

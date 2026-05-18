@@ -135,7 +135,6 @@ export default function PRAnalysisPage() {
           <PRAnalysisResult
             pr={pr}
             previewReport={previewReport}
-            baselineReport={baselineReport}
             comparison={comparison}
             onReset={reset}
           />

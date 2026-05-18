@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { GitHubPR } from '@/types/github';
 
 interface PRInfoCardProps {
@@ -59,8 +60,13 @@ export function PRInfoCard({ pr }: PRInfoCardProps) {
         </a>
       </div>
       <div className="mt-2 flex items-center gap-1.5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={pr.author.avatarUrl} alt={pr.author.login} className="h-4 w-4 rounded-full" />
+        <Image
+          src={pr.author.avatarUrl}
+          alt={pr.author.login}
+          width={16}
+          height={16}
+          className="rounded-full"
+        />
         <span className="text-xs text-[var(--color-text-muted)]">{pr.author.login}</span>
       </div>
     </div>
