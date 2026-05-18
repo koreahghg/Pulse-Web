@@ -55,15 +55,6 @@ const PRIORITY_FILTERS: { key: RecommendationPriority | 'all'; label: string }[]
 export function RecommendationPanel({ recommendations }: Props) {
   const [activeFilter, setActiveFilter] = useState<RecommendationPriority | 'all'>('all');
 
-  if (recommendations.length === 0) {
-    return (
-      <section className="rounded-2xl border border-green-200 bg-green-50 p-6 shadow-sm">
-        <p className="text-sm font-semibold text-green-700">모든 지표가 양호합니다</p>
-        <p className="mt-1 text-sm text-green-600">현재 개선이 필요한 항목이 없습니다.</p>
-      </section>
-    );
-  }
-
   const countByPriority = useMemo(
     () =>
       recommendations.reduce<Record<string, number>>(
@@ -80,6 +71,15 @@ export function RecommendationPanel({ recommendations }: Props) {
         : recommendations.filter((r) => r.priority === activeFilter),
     [recommendations, activeFilter],
   );
+
+  if (recommendations.length === 0) {
+    return (
+      <section className="rounded-2xl border border-green-200 bg-green-50 p-6 shadow-sm">
+        <p className="text-sm font-semibold text-green-700">모든 지표가 양호합니다</p>
+        <p className="mt-1 text-sm text-green-600">현재 개선이 필요한 항목이 없습니다.</p>
+      </section>
+    );
+  }
 
   const criticalCount = countByPriority['critical'] ?? 0;
   const highCount = countByPriority['high'] ?? 0;
