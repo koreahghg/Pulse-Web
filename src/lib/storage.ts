@@ -1,8 +1,11 @@
 import type { LighthouseReport } from '@/types';
+import type { PRAnalysisSession } from '@/types/github';
 
 const STORAGE_KEY = 'pulse-web:history';
 const HISTORY_LIST_KEY = 'pulse-web:history-list';
+const PR_SESSIONS_KEY = 'pulse-web:pr-sessions';
 const MAX_ENTRIES = 50;
+const MAX_PR_SESSIONS = 20;
 
 interface StorageEntry {
   report: LighthouseReport;
@@ -87,4 +90,38 @@ export function getAllHistoryEntries(): HistoryEntry[] {
 export function deleteHistoryEntry(id: string): void {
   const list = readHistoryList().filter((entry) => entry.id !== id);
   writeHistoryList(list);
+}
+
+function readPRSessions(): PRAnalysisSession[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(PR_SESSIONS_KEY);
+    return raw ? (JSON.parse(raw) as PRAnalysisSession[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writePRSessions(sessions: PRAnalysisSession[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(PR_SESSIONS_KEY, JSON.stringify(sessions));
+  } catch {
+    // 용량 초과 또는 시크릿 모드에서 무시
+  }
+}
+
+export function savePRSession(session: PRAnalysisSession): void {
+  const sessions = readPRSessions().filter((s) => s.id !== session.id);
+  sessions.unshift(session);
+  if (sessions.length > MAX_PR_SESSIONS) sessions.splice(MAX_PR_SESSIONS);
+  writePRSessions(sessions);
+}
+
+export function getAllPRSessions(): PRAnalysisSession[] {
+  return readPRSessions();
+}
+
+export function deletePRSession(id: string): void {
+  writePRSessions(readPRSessions().filter((s) => s.id !== id));
 }
