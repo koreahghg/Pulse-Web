@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: '/', label: '대시보드' },
   { href: '/audit', label: '성능 감사' },
   { href: '/history', label: '측정 이력' },
+  { href: '/pr-analysis', label: 'PR 성능 분석' },
 ] as const;
 
 export function Sidebar() {
