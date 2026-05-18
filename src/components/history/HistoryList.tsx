@@ -1,7 +1,7 @@
 'use client';
 
 import type { HistoryEntry } from '@/lib/storage';
-import { formatDate, formatScore } from '@/lib/utils';
+import { formatDate, formatScore, scoreToRating } from '@/lib/utils';
 
 interface HistoryListProps {
   entries: HistoryEntry[];
@@ -12,10 +12,11 @@ interface HistoryListProps {
 
 function ScoreBadge({ score }: { score: number }) {
   const value = formatScore(score);
+  const rating = scoreToRating(score);
   const color =
-    value >= 90
+    rating === 'good'
       ? 'bg-emerald-100 text-emerald-700'
-      : value >= 50
+      : rating === 'needs-improvement'
         ? 'bg-amber-100 text-amber-700'
         : 'bg-rose-100 text-rose-700';
   return (

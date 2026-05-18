@@ -81,9 +81,7 @@ export function saveReport(url: string, report: LighthouseReport): void {
 }
 
 export function getAllHistoryEntries(): HistoryEntry[] {
-  return readHistoryList().sort(
-    (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
-  );
+  return readHistoryList();
 }
 
 export function deleteHistoryEntry(id: string): void {
