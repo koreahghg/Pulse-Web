@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { getScoreStyle } from '@/lib/utils';
 import { useDashboard } from '@/hooks/useDashboard';
 import { RecentAuditCard } from './RecentAuditCard';
 import type { LighthouseCategories } from '@/types';
@@ -14,14 +15,6 @@ const CATEGORIES: { key: CategoryKey; label: string }[] = [
   { key: 'seo', label: 'SEO' },
 ];
 
-function scoreColor(score: number | null): string {
-  if (score === null) return 'text-[var(--color-text-muted)]';
-  const pct = Math.round(score * 100);
-  if (pct >= 90) return 'text-green-600';
-  if (pct >= 50) return 'text-orange-500';
-  return 'text-red-600';
-}
-
 export function DashboardClient() {
   const { latestScores, recentEntries, totalAudits } = useDashboard();
 
@@ -30,6 +23,8 @@ export function DashboardClient() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {CATEGORIES.map(({ key, label }) => {
           const score = latestScores?.[key].score ?? null;
+          const textClass =
+            score !== null ? getScoreStyle(score).text : 'text-[var(--color-text-muted)]';
           return (
             <div
               key={key}
@@ -39,7 +34,7 @@ export function DashboardClient() {
               <p className="text-sm font-medium text-[var(--color-text-muted)]">{label}</p>
               <p
                 data-testid="score-value"
-                className={`mt-2 text-3xl font-bold tabular-nums ${scoreColor(score)}`}
+                className={`mt-2 text-3xl font-bold tabular-nums ${textClass}`}
               >
                 {score !== null ? Math.round(score * 100) : '--'}
               </p>
