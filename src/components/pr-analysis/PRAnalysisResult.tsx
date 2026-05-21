@@ -1,8 +1,6 @@
 'use client';
 
-import type { GitHubPR } from '@/types/github';
-import type { LighthouseReport } from '@/types';
-import type { ComparisonResult } from '@/types/comparison';
+import type { GitHubPR, LighthouseReport, ComparisonResult } from '@/types';
 import { PRInfoCard } from './PRInfoCard';
 import { ComparisonTable } from '@/components/comparison/ComparisonTable';
 import { WebVitalsChart } from '@/components/charts/WebVitalsChart';

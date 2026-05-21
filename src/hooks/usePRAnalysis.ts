@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import type { GitHubPR, PRAnalysisStep, PRAnalysisSession } from '@/types/github';
-import type { LighthouseReport } from '@/types';
-import type { ComparisonResult } from '@/types/comparison';
+import type { GitHubPR, PRAnalysisStep, PRAnalysisSession, LighthouseReport, ComparisonResult } from '@/types';
 import { fetchGitHubPR } from '@/services/github';
 import { requestLighthouseAudit } from '@/services/audit';
 import { getStoredReport, saveReport, savePRSession } from '@/lib/storage';
@@ -92,7 +90,5 @@ export function usePRAnalysis() {
 
   const reset = useCallback(() => setState(INITIAL_STATE), []);
 
-  const backToInput = useCallback(() => setState(INITIAL_STATE), []);
-
-  return { ...state, fetchPR, runAnalysis, reset, backToInput };
+  return { ...state, fetchPR, runAnalysis, reset };
 }
