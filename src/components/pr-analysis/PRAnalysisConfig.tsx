@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import type { GitHubPR } from '@/types/github';
+import { useState, type FormEvent } from 'react';
+import type { GitHubPR } from '@/types';
+import { isValidUrl } from '@/lib/utils';
 import { PRInfoCard } from './PRInfoCard';
 
 interface PRAnalysisConfigProps {
@@ -10,22 +11,13 @@ interface PRAnalysisConfigProps {
   onBack: () => void;
 }
 
-function isValidUrl(url: string): boolean {
-  try {
-    const u = new URL(url);
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
 export function PRAnalysisConfig({ pr, onSubmit, onBack }: PRAnalysisConfigProps) {
   const [previewUrl, setPreviewUrl] = useState('');
   const [baselineUrl, setBaselineUrl] = useState('');
 
   const canSubmit = isValidUrl(previewUrl) && isValidUrl(baselineUrl);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (canSubmit) onSubmit(previewUrl.trim(), baselineUrl.trim());
   }
