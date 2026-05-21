@@ -18,7 +18,7 @@ export type {
   LighthouseReport,
 } from './lighthouse';
 
-export type { AnalysisRecord, AnalysisHistory, StoredHistory } from './history';
+export type { AnalysisRecord, AnalysisHistory, StoredHistory, HistoryEntry } from './history';
 
 export type { MetricDelta, CategoryDelta, WebVitalDeltaMap, ComparisonResult } from './comparison';
 
@@ -29,3 +29,12 @@ export type {
   RecommendationAction,
   Recommendation,
 } from './recommendation';
+
+export type {
+  GitHubUser,
+  GitHubRepository,
+  PRState,
+  GitHubPR,
+  PRAnalysisStep,
+  PRAnalysisSession,
+} from './github';

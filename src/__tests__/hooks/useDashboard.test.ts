@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useDashboard } from '@/hooks/useDashboard';
 import * as storage from '@/lib/storage';
-import type { HistoryEntry } from '@/lib/storage';
+import type { HistoryEntry } from '@/types';
 
 vi.mock('@/lib/storage', () => ({
   getAllHistoryEntries: vi.fn(),

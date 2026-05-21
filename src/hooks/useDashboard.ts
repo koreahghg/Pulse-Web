@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { HistoryEntry } from '@/types';
 import { getAllHistoryEntries } from '@/lib/storage';
-import type { HistoryEntry } from '@/lib/storage';
 import type { LighthouseCategories } from '@/types';
 
 const RECENT_LIMIT = 5;

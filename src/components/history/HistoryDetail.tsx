@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { HistoryEntry } from '@/lib/storage';
+import type { HistoryEntry } from '@/types';
 import { formatDate, formatScore } from '@/lib/utils';
 import { WebVitalsChart } from '@/components/charts/WebVitalsChart';
 import { RecommendationPanel } from '@/components/recommendations/RecommendationPanel';

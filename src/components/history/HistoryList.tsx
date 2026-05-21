@@ -1,6 +1,6 @@
 'use client';
 
-import type { HistoryEntry } from '@/lib/storage';
+import type { HistoryEntry } from '@/types';
 import { formatDate, formatScore, scoreToRating } from '@/lib/utils';
 
 interface HistoryListProps {
