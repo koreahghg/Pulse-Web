@@ -1,5 +1,6 @@
 const WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 60_000;
 const MAX_REQUESTS = Number(process.env.RATE_LIMIT_MAX) || 10;
+const MAX_STORE_ENTRIES = 1_000;
 
 interface WindowRecord {
   timestamps: number[];
@@ -31,11 +32,24 @@ export function checkRateLimit(key: string): RateLimitResult {
   record.timestamps.push(now);
   store.set(key, record);
 
+  if (store.size > MAX_STORE_ENTRIES) {
+    pruneStore(windowStart);
+  }
+
   return {
     allowed: true,
     remaining: MAX_REQUESTS - record.timestamps.length,
     resetAt,
   };
+}
+
+function pruneStore(windowStart: number): void {
+  for (const [key, record] of store) {
+    const latest = record.timestamps.at(-1) ?? 0;
+    if (latest <= windowStart) {
+      store.delete(key);
+    }
+  }
 }
 
 // 테스트 환경에서 store 초기화용

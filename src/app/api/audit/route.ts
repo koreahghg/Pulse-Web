@@ -36,8 +36,17 @@ export async function POST(request: Request) {
     );
   }
 
-  const contentLength = Number(request.headers.get('content-length') ?? 0);
-  if (contentLength > MAX_BODY_BYTES) {
+  let bodyText: string;
+  try {
+    bodyText = await request.text();
+  } catch {
+    return createErrorResponse('요청 본문을 읽을 수 없습니다.', 'INVALID_BODY', 400, {
+      remaining,
+      resetAt,
+    });
+  }
+
+  if (bodyText.length > MAX_BODY_BYTES) {
     return createErrorResponse('요청 본문이 너무 큽니다.', 'PAYLOAD_TOO_LARGE', 413, {
       remaining,
       resetAt,
@@ -46,7 +55,7 @@ export async function POST(request: Request) {
 
   let body: AuditRequestBody;
   try {
-    body = (await request.json()) as AuditRequestBody;
+    body = JSON.parse(bodyText) as AuditRequestBody;
   } catch {
     return createErrorResponse('요청 본문은 JSON 형식이어야 합니다.', 'INVALID_JSON', 400, {
       remaining,
@@ -101,11 +110,11 @@ export async function POST(request: Request) {
 }
 
 function getClientIp(request: Request): string {
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp;
   const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  return request.headers.get('x-real-ip') ?? 'unknown';
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return 'unknown';
 }
 
 function parseStrategy(value: unknown): AuditStrategy {
