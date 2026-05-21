@@ -23,10 +23,29 @@ export function formatDate(dateString: string): string {
 export function isValidUrl(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.protocol === 'http:' || url.protocol === 'https:';
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
+    return !isPrivateHost(url.hostname);
   } catch {
     return false;
   }
+}
+
+function isPrivateHost(hostname: string): boolean {
+  const lower = hostname.toLowerCase();
+  const privatePatterns = [
+    /^localhost$/,
+    /^127\./,
+    /^0\./,
+    /^10\./,
+    /^172\.(1[6-9]|2[0-9]|3[01])\./,
+    /^192\.168\./,
+    /^169\.254\./,
+    /^\[?::1\]?$/,
+    /^\[?::ffff:127\./,
+    /^\[?fe80:/,
+    /^metadata\.google\.internal$/,
+  ];
+  return privatePatterns.some((pattern) => pattern.test(lower));
 }
 
 export interface ScoreStyle {
