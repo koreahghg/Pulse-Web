@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import type { GitHubPR } from '@/types';
 import { isValidUrl } from '@/lib/utils';
 import { PRInfoCard } from './PRInfoCard';
@@ -15,9 +15,9 @@ export function PRAnalysisConfig({ pr, onSubmit, onBack }: PRAnalysisConfigProps
   const [previewUrl, setPreviewUrl] = useState('');
   const [baselineUrl, setBaselineUrl] = useState('');
 
-  const canSubmit = isValidUrl(previewUrl) && isValidUrl(baselineUrl);
+  const canSubmit = isValidUrl(previewUrl.trim()) && isValidUrl(baselineUrl.trim());
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
     if (canSubmit) onSubmit(previewUrl.trim(), baselineUrl.trim());
   }
