@@ -5,7 +5,7 @@ import { PRInputForm } from '@/components/pr-analysis/PRInputForm';
 import { PRInfoCard } from '@/components/pr-analysis/PRInfoCard';
 import { PRAnalysisConfig } from '@/components/pr-analysis/PRAnalysisConfig';
 import { PRAnalysisResult } from '@/components/pr-analysis/PRAnalysisResult';
-import type { PRAnalysisStep } from '@/types/github';
+import type { PRAnalysisStep } from '@/types';
 
 const STEP_INDEX: Record<PRAnalysisStep, number> = {
   input: 0,
@@ -81,7 +81,6 @@ export default function PRAnalysisPage() {
     fetchPR,
     runAnalysis,
     reset,
-    backToInput,
   } = usePRAnalysis();
 
   const isAnalyzing = step === 'analyzing-preview' || step === 'analyzing-baseline';
@@ -116,7 +115,7 @@ export default function PRAnalysisPage() {
 
       {step === 'configuring' && pr && (
         <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-6">
-          <PRAnalysisConfig pr={pr} onSubmit={runAnalysis} onBack={backToInput} />
+          <PRAnalysisConfig pr={pr} onSubmit={runAnalysis} onBack={reset} />
         </div>
       )}
 

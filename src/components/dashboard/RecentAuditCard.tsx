@@ -1,7 +1,7 @@
 'use client';
 
 import { getScoreStyle, formatTimeAgo } from '@/lib/utils';
-import type { HistoryEntry } from '@/lib/storage';
+import type { HistoryEntry } from '@/types';
 
 interface Props {
   entry: HistoryEntry;

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import type { HistoryEntry } from '@/types';
 import { getAllHistoryEntries, deleteHistoryEntry } from '@/lib/storage';
-import type { HistoryEntry } from '@/lib/storage';
 import { HistoryList } from '@/components/history/HistoryList';
 import { HistoryDetail } from '@/components/history/HistoryDetail';
 

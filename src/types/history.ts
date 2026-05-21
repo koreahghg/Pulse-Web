@@ -1,6 +1,13 @@
 import type { AnalysisRequest, AnalysisError } from './analysis';
 import type { LighthouseReport } from './lighthouse';
 
+export interface HistoryEntry {
+  id: string;
+  url: string;
+  savedAt: string;
+  report: LighthouseReport;
+}
+
 export type AnalysisRecord =
   | {
       request: AnalysisRequest & { status: 'completed' };

@@ -1,5 +1,4 @@
-import type { LighthouseReport } from '@/types';
-import type { PRAnalysisSession } from '@/types/github';
+import type { LighthouseReport, HistoryEntry, PRAnalysisSession } from '@/types';
 
 const STORAGE_KEY = 'pulse-web:history';
 const HISTORY_LIST_KEY = 'pulse-web:history-list';
@@ -14,12 +13,6 @@ interface StorageEntry {
 
 type StorageMap = Record<string, StorageEntry>;
 
-export interface HistoryEntry {
-  id: string;
-  url: string;
-  savedAt: string;
-  report: LighthouseReport;
-}
 
 function readMap(): StorageMap {
   if (typeof window === 'undefined') return {};
