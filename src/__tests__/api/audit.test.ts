@@ -158,14 +158,12 @@ describe('POST /api/audit', () => {
   });
 
   describe('보안 — 요청 크기 제한', () => {
-    it('content-length가 1KB를 초과하면 413을 반환한다', async () => {
+    it('본문이 1KB를 초과하면 413을 반환한다', async () => {
+      const largeBody = JSON.stringify({ url: 'https://example.com/' + 'a'.repeat(1100) });
       const req = new Request('http://localhost:3000/api/audit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'content-length': '2048',
-        },
-        body: JSON.stringify({ url: 'https://example.com' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: largeBody,
       });
       const res = await POST(req);
       expect(res.status).toBe(413);
